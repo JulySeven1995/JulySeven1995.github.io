@@ -56,6 +56,7 @@ Bean & Injection
       `@Component`, `@Controller`, `@Service`, `@Repository` 는 다 똑같다?
 
      반은 맞고 반은 틀리다. 기능적으로는 모든 `Bean` 객체에 어떤 어노테이션을 사용하던, 사실상 전부 `@Component`를 사용해도 로직을 구성하는데에 별 문제는 없다. 하지만 `Spring Framework` 자체는 협업과 생산성 향상을 위해서 만들어진 프레임워크이며(이 외에도 안정성, 보안성 등등 많은 것이 있다.), 개발 프로젝트에서는 동업자들끼리 '언어'가 아닌 '코드'로 소통해야 하는 경우가 빈번하다.  기능이 되면 그냥 그거 쓰지 하고 넘어가지 말고, 반드시 `Bean` 이 무슨 역할을 하고 어떤 레이어에 속해있어야 하는지 어노테이션으로 상기시켜주자.
+     ![](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/5fb26a4e-0a25-4bc1-867e-dcbb18df7fc4/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20210422%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20210422T154831Z&X-Amz-Expires=86400&X-Amz-Signature=f5f1532e97a4d3c52cd3a121da7cf27038e5991b4c04a41e5d122db67be9c14b&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Untitled.png%22)
 
   2. XML Config
 
