@@ -7,6 +7,7 @@ tags:
   - Spring Boot
   - JPA
 layout: single
+comments: true
 ---
 
 Bean & Injection
