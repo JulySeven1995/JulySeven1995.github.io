@@ -29,23 +29,23 @@ comments: true
 - 특징
     
     예시에 사용할 클래스, Lombok을 사용한다고 가정함.
-    
+
     ```java
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstrctor
     @Builder
-    public class User{
+    public class User {
     
-    	@Builder.Default
-    	private String name = "재빠른호돌이";
-    	
-    	@Builder.Default
-      private Integer age = 28;
-    
-    	@Builder.Default
-      private Integer height = 170;
+        @Builder.Default
+        private String name = "재빠른호돌이";
+            
+        @Builder.Default
+        private Integer age = 28;
+        
+        @Builder.Default
+        private Integer height = 170;
         
     }
     ```
