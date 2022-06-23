@@ -8,8 +8,6 @@ layout: single
 comments: true
 ---
 
-# 디자인패턴 - Builder Pattern
-
 ### Index
 
 1. Summary
