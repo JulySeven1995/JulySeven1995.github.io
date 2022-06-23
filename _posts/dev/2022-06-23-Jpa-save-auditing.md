@@ -28,7 +28,7 @@ public void deleteProjectModule(Long projectId, Long moduleId) {
 
     Project project = this.projectQueryRepository.findById(projectId).orElseThrow();
     project.deleteModule(moduleId);
-    this.projectCommandRepository(project);
+    this.projectCommandRepository.save(project);
 }
 ```
 
