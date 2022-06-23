@@ -106,8 +106,6 @@ class JpaController(
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
-
-    @CrossOrigin("*")
     @RequestMapping(method = [RequestMethod.GET], path = ["/getUserInfo"], params = ["userId"])
     @ResponseBody
     fun getUserInfo(@RequestParam userId: String): Map<String, Any> {
@@ -141,7 +139,6 @@ class JpaController(
         return objectConvertService.convertToMap(user)
     }
 
-    @CrossOrigin("*")
     @RequestMapping(method = [RequestMethod.PUT], path = ["/updateUser"], params = ["userId"])
     @ResponseBody
     fun updateUser(@RequestParam userId: String, @RequestParam userName: String, @RequestParam password: String): Map<String, Any> {
@@ -160,7 +157,6 @@ class JpaController(
         return objectConvertService.convertToMap(user)
     }
 
-    @CrossOrigin("*")
     @RequestMapping(method = [RequestMethod.DELETE], path = ["/deleteUser"], params = ["userId"])
     fun deleteUser(@RequestParam userId: String): ResponseEntity<Any> {
 
