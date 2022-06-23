@@ -23,7 +23,7 @@ Repository? Service?
   @Indexed
   public @interface Component {
   
-  	String value() default "";
+    String value() default "";
   }
   ```
 
@@ -34,8 +34,8 @@ Repository? Service?
   @Component
   public @interface Controller {
   
-  	@AliasFor(annotation = Component.class)
-  	String value() default "";
+    @AliasFor(annotation = Component.class)
+    String value() default "";
   }
   ```
 
@@ -46,8 +46,8 @@ Repository? Service?
   @Component
   public @interface Service {
   
-  	@AliasFor(annotation = Component.class)
-  	String value() default "";
+    @AliasFor(annotation = Component.class)
+    String value() default "";
   }
   ```
 
@@ -58,8 +58,8 @@ Repository? Service?
   @Component
   public @interface Repository {
   
-   @AliasFor(annotation = Component.class)
-  	String value() default "";
+    @AliasFor(annotation = Component.class)
+    String value() default "";
   }
   ```
 
@@ -74,17 +74,18 @@ Repository? Service?
   ```java
   @Repository
   public interface UserRepository {
-      @Select("SELECT * FROM user WHERE USER_ID = #{userId}")                       
-      Optional<User> findByUserId(String userId);
+
+    @Select("SELECT * FROM user WHERE USER_ID = #{userId}")                       
+    Optional<User> findByUserId(String userId);
+
+    @Update("UPDATE user SET USER_NAME = #{userName}, PASSWORD = #{password} WHERE USER_ID = #{userId}")                       
+    User updateUser(User user);
   
-  		@Update("UPDATE user SET USER_NAME = #{userName}, PASSWORD = #{password} WHERE USER_ID = #{userId}")                       
-      User updateUser(User user);
-   
-      @Delete("DELETE FROM user WHERE USER_ID = #{userId}")
-      void deleteUserByUserId(String userId);
-  
-  		@Insert("INSERT INTO user(USER_ID, USER_NAME, PASSWORD) VALUES (#{userId}, #{userName}, #{password})")
-  		User createUser(User user);
+    @Delete("DELETE FROM user WHERE USER_ID = #{userId}")
+    void deleteUserByUserId(String userId);
+
+    @Insert("INSERT INTO user(USER_ID, USER_NAME, PASSWORD) VALUES (#{userId}, #{userName}, #{password})")
+    User createUser(User user);
   }
   ```
 
@@ -95,13 +96,13 @@ Repository? Service?
   ```java
   public interface UserService {
   	
-  		Optional<User> getUserById(String userId);
-  
-      User createUser(User user);
-  
-      User updateUser(User user);
-  
-      void deleteUser(String userId);
+    Optional<User> getUserById(String userId);
+
+    User createUser(User user);
+
+    User updateUser(User user);
+
+    void deleteUser(String userId);
   
   }
   ```
@@ -154,19 +155,18 @@ Repository? Service?
   @RequiredArgsConstructor
   public class Controller {
   
-  	private final UserService userService;
+    private final UserService userService;
   
     @RequestMapping(method = RequestMethod.POST, path = "/createUser", params = { "userId", "userName", "password" })
     public ResponseEntity<User> createUser(@RequestParam String userId, @RequestParam String userName, @RequestParam String password) throws ResponseStatusException {
   
-  		 // 금지된 USER_ID로 생성 요청이 들어왔을 경우 필터링
-  		 if (IllegalUserList.contains(userId)) {
-  				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-  					String.format("Create User Failed, Illegal userId : [%s]", userId));
-  		 }
+      // 금지된 USER_ID로 생성 요청이 들어왔을 경우 필터링
+      if (IllegalUserList.contains(userId)) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Create User Failed, Illegal userId : [%s]", userId));
+      }
   
-       User user = new User(userId, userName, password);
-       return ResponseEntity.ok().body(userService.createUser(user));
+      User user = new User(userId, userName, password);
+      return ResponseEntity.ok().body(userService.createUser(user));
        
     }
   
@@ -181,10 +181,9 @@ Repository? Service?
   @Override
   public void createUser(User user) throw IllegalArgumentException {
   
-  	 if (IllegalUserList.contains(userId)) {
-  				throw new IllegalArgumentException(
-  					String.format("Create User Failed, Illegal userId : [%s]", userId));
-  	 }
+    if (IllegalUserList.contains(userId)) {
+        throw new IllegalArgumentException(String.format("Create User Failed, Illegal userId : [%s]", userId));
+    }
      repository.createUser(user);
   }
   
