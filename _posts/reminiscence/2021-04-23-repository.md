@@ -77,15 +77,13 @@ Repository? Service?
       @Select("SELECT * FROM user WHERE USER_ID = #{userId}")                       
       Optional<User> findByUserId(String userId);
   
-  		@Update("UPDATE user SET USER_NAME = #{userName}, PASSWORD = #{password} "
-  						 + "WHERE USER_ID = #{userId}")                       
+  		@Update("UPDATE user SET USER_NAME = #{userName}, PASSWORD = #{password} WHERE USER_ID = #{userId}")                       
       User updateUser(User user);
    
       @Delete("DELETE FROM user WHERE USER_ID = #{userId}")
       void deleteUserByUserId(String userId);
   
-  		@Insert("INSERT INTO user(USER_ID, USER_NAME, PASSWORD) "
-  						+ "VALUES (#{userId}, #{userName}, #{password})")
+  		@Insert("INSERT INTO user(USER_ID, USER_NAME, PASSWORD) VALUES (#{userId}, #{userName}, #{password})")
   		User createUser(User user);
   }
   ```
@@ -152,22 +150,14 @@ Repository? Service?
   필자가 `Spring Framework` 를 활용해 처음 개발을 했을 때, 가장 먼저 들었던 생각이다.  아래의 예제를 통해 해당 패턴이 개발을 하면서 어떤 이득을 얻을 수 있는지 확인 해 보자.
 
   ```java
-  @Controller
+  @RestController
+  @RequiredArgsConstructor
   public class Controller {
   
   	private final UserService userService;
-    private final ObjectMapperService objectMapperService;
   
-  	public Controller(UserService userService, ObjectMapperService objectMapperService) {
-  
-          this.userService = userService;
-  				this.objectMapperService = objectMapperService;
-    }
-  
-  	@CrossOrigin("*")
     @RequestMapping(method = RequestMethod.POST, path = "/createUser", params = { "userId", "userName", "password" })
-    @ResponseBody
-    public Map<String, Object> createUser(@RequestParam String userId, @RequestParam String userName, @RequestParam String password) throws ResponseStatusException {
+    public ResponseEntity<User> createUser(@RequestParam String userId, @RequestParam String userName, @RequestParam String password) throws ResponseStatusException {
   
   		 // 금지된 USER_ID로 생성 요청이 들어왔을 경우 필터링
   		 if (IllegalUserList.contains(userId)) {
@@ -176,8 +166,8 @@ Repository? Service?
   		 }
   
        User user = new User(userId, userName, password);
-       user = userService.createUser(user);
-       return objectMapperService.convertToMap(user);
+       return ResponseEntity.ok().body(userService.createUser(user));
+       
     }
   
   }
