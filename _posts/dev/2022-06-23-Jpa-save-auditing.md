@@ -11,6 +11,7 @@ comments: true
 
 ### When @PreUpdate Works?
 
+
 ---
 
 실무에서 작업을 하던중 어떤 아이템의 최근 수정 날짜가 변경되지 않는다는 이슈가 발생했다.
