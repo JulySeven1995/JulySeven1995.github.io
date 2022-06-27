@@ -11,7 +11,7 @@ comments: true
 ### Index
 
 1. Summary
-2. Usage (of our service)
+2. Usage
 3. Conclusion
 
 ---
