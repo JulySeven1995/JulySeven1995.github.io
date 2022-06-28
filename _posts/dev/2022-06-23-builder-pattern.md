@@ -180,15 +180,15 @@ Lombok의 힘을 빌려 위와 같이 builder의 메서드명을 지정할 수 �
 @StepScope
 public JpaPagingItemReader<SomeItem> someItemReader(@Value("#{jobParameters[requestDate]}") final Date requestDate) {
 
-    JpaPagingItemReader<SomeItem> walletItemReader = new JpaPagingItemReader<>();
-    walletItemReader.setName("someItemReader");
-    walletItemReader.setEntityManagerFactory(entityManagerFactory);
-    walletItemReader.setQueryString("jpql query...");
-    walletItemReader.setParameterValues(Collections.singletonMap("expireDate", requestDate.toInstant()));
-    walletItemReader.setSaveState(Boolean.FALSE);
-    walletItemReader.setPageSize(CHUNK_SIZE);
+    JpaPagingItemReader<SomeItem> someItemReader = new JpaPagingItemReader<>();
+    someItemReader.setName("someItemReader");
+    someItemReader.setEntityManagerFactory(entityManagerFactory);
+    someItemReader.setQueryString("jpql query...");
+    someItemReader.setParameterValues(Collections.singletonMap("expireDate", requestDate.toInstant()));
+    someItemReader.setSaveState(Boolean.FALSE);
+    someItemReader.setPageSize(CHUNK_SIZE);
     
-    return walletItemReader;
+    return someItemReader;
 }
 ```
 
