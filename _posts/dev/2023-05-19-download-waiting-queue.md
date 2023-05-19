@@ -10,8 +10,6 @@ layout: single
 comments: true
 ---
 
-## 다운로드 대기열 기능 적용기
-
 작년에 회사에서 Kotlin + WebFlux를 사용해 다운로드 서비스를 하나 만들어 놓은게 있는데, 
 
 일정상의 문제로 미완성 된 상태로 운영 서버에 올라간 녀석이 하나 있었다.
@@ -25,43 +23,41 @@ comments: true
 
 시나리오
 
-  1. 토큰 발급
-
-  ```mermaid
+* 토큰 발급
+  <div class="mermaid"> 
     sequenceDiagram
       Client ->> Server: 다운로드 토큰 발급 요청
       Server ->> Database: 파일 정보 조회
       Database -->> Server: 파일 정보 반환
       Server ->> Server: 토큰 생성
       Server ->> Redis: 토큰 저장
-      Server -->> Client: 토큰 반환
-  ```
-
-  2. 파일 다운로드
-
-  ```mermaid
+      Server -->> Client: 토큰 반환"
+  </div>
+* 파일 다운로드
+  <div class="mermaid"> 
     sequenceDiagram
       Client ->> Server: 파일 다운로드 요청(토큰)
       Server ->> Redis: 토큰 조회
       Redis -->> Server: 토큰 정보 반환
       Server -->> Client: 파일 전송 Stream
       Server ->> Redis: 토큰 삭제
-  ```
+  </div>
+
 
 
 엔드포인트도 단 2개밖에 존재하지 않는다. 토큰 발급 그리고 토큰을 통한 파일 다운로드.
 
 ```kotlin
-    @GetMapping(
-      path = ["/request/download/{requestToken}"], 
-      produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
-    )
-    fun download(@PathVariable requestToken: String) // return Flux<ByteBuffer!>
-      = fileDownloadService.fileDownloadByRequestToken(requestToken)
+  @GetMapping(
+    path = ["/request/download/{requestToken}"], 
+    produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
+  )
+  fun download(@PathVariable requestToken: String) // return Flux<ByteBuffer!>
+    = fileDownloadService.fileDownloadByRequestToken(requestToken)
 
-    @PostMapping(path = ["/request/generate/{fileId}"])
-    fun generate(@PathVariable fileId: Long) // return Mono<String!>
-      = fileDownloadService.generateFileDownloadRequestToken(fileId)
+  @PostMapping(path = ["/request/generate/{fileId}"])
+  fun generate(@PathVariable fileId: Long) // return Mono<String!>
+    = fileDownloadService.generateFileDownloadRequestToken(fileId)
 ```
 
 문제점
@@ -118,99 +114,98 @@ comments: true
 
   시나리오
 
-  1. 토큰 발급
-    
-      ```mermaid
-        sequenceDiagram
-          Client ->> Server: 다운로드 토큰 발급 요청
-          Server ->> Database: 파일 정보 조회
-          Database -->> Server: 파일 정보 반환
-          Server ->> Server: 토큰 생성
-          Server -->> Client: 토큰 반환
-      ```
+  * 토큰 발급 
+  <div class="mermaid"> 
+    sequenceDiagram
+      Client ->> Server: 다운로드 토큰 발급 요청
+      Server ->> Database: 파일 정보 조회
+      Database -->> Server: 파일 정보 반환
+      Server ->> Server: 토큰 생성
+      Server -->> Client: 토큰 반환
+  </div>
 
-  2. 다운로드 대기열 연결
-      ```mermaid
-        sequenceDiagram
-          Client ->> Server: 다운로드 대기열 등록 요청(토큰)
-          Server ->> Redis: 다운로드 대기열에 등록(토큰 enqueue)
-          loop 대기열 순번 대기
-            Server ->> Redis: 토큰의 대기 번호 검색
-            Redis -->> Server: 토큰의 대기 번호 반환
-            alt is 토큰 대기 필요
-              Server -->> Client: 대기번호 반환
-            else is 다운로드 가능
-              Server -->> Client: 대기 종료
-              Server ->> Redis: 토큰 dequeue
-              Server ->> Redis: 다운로드 가능 토큰 등록
-            end
-          end 
-          Server ->> Client: stream 종료
-      ```
-  3. 파일 다운로드
-      ```mermaid
-        sequenceDiagram
-          Client ->> Server: 다운로드 요청(토큰)
-          Client ->> Server: 다운로드 요청
-          loop 파일 다운로드
-            Server -->> Client: 파일 전송
-            alt is EOF
-              Server ->> Redis: 다운로드 토큰 제거
-            end
-          end
-          Server -->> Client: 파일 다운로드 완료
-      ```
+  * 다운로드 대기열 연결
+  <div class="mermaid"> 
+  sequenceDiagram
+    Client ->> Server: 다운로드 대기열 등록 요청(토큰)
+    Server ->> Redis: 다운로드 대기열에 등록(토큰 enqueue)
+    loop 대기열 순번 대기
+      Server ->> Redis: 토큰의 대기 번호 검색
+      Redis -->> Server: 토큰의 대기 번호 반환
+      alt is 토큰 대기 필요
+        Server -->> Client: 대기번호 반환
+      else is 다운로드 가능
+        Server -->> Client: 대기 종료
+        Server ->> Redis: 토큰 dequeue
+        Server ->> Redis: 다운로드 가능 토큰 등록
+      end
+    end 
+    Server ->> Client: stream 종료
+  </div>
 
+  * 파일 다운로드
+  <div class="mermaid"> 
+    sequenceDiagram
+      Client ->> Server: 다운로드 요청(토큰)
+      Client ->> Server: 다운로드 요청
+      loop 파일 다운로드
+        Server -->> Client: 파일 전송
+        alt is EOF
+          Server ->> Redis: 다운로드 토큰 제거
+        end
+      end
+      Server -->> Client: 파일 다운로드 완료
+  </div>
 Server 코드
 
 1. 엔드포인트
     ```kotlin
 
-    @GetMapping(
-      path = ["/request/download/{requestToken}"], 
-      produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
-    )
-    fun download(@PathVariable requestToken: String) // return Flux<ByteBuffer!>
-      = fileDownloadService.download(requestToken)
+      @GetMapping(
+        path = ["/request/download/{requestToken}"], 
+        produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
+      )
+      fun download(@PathVariable requestToken: String) // return Flux<ByteBuffer!>
+        = fileDownloadService.download(requestToken)
 
-    // 다운로드 대기열 등록
-    @GetMapping(
-      path = ["/request/order/{requestToken}"], 
-      produces = [MediaType.TEXT_EVENT_STREAM_VALUE]
-    )
-    fun enqueue(@PathVariable requestToken: String) // return Flux<Long!>
-      = fileDownloadService.subscribeDownloadQueue(requestToken)
+      // 다운로드 대기열 등록
+      @GetMapping(
+        path = ["/request/order/{requestToken}"], 
+        produces = [MediaType.TEXT_EVENT_STREAM_VALUE]
+      )
+      fun enqueue(@PathVariable requestToken: String) // return Flux<Long!>
+        = fileDownloadService.subscribeDownloadQueue(requestToken)
 
-    @GetMapping(path = ["/request/generate/{fileId}"])
-    fun generate(@PathVariable fileId: Long) // return Mono<String!>
-      = fileDownloadService.generateFileDownloadRequestToken(fileId)
+      @GetMapping(path = ["/request/generate/{fileId}"])
+      fun generate(@PathVariable fileId: Long) // return Mono<String!>
+        = fileDownloadService.generateFileDownloadRequestToken(fileId)
     ```
 
 2. Service
     ```kotlin
-    fun subscribeDownloadQueue(requestToken: String): Flux<Long?> {
+      fun subscribeDownloadQueue(requestToken: String): Flux<Long?> {
 
-        // 다운로드 대기열에 있는 동안 신청 받지 않음
-        if (!downloadQueueService.isExists(requestToken)) {
-            downloadQueueService.enqueue(requestToken)
-        }
+          // 다운로드 대기열에 있는 동안 신청 받지 않음
+          if (!downloadQueueService.isExists(requestToken)) {
+              downloadQueueService.enqueue(requestToken)
+          }
 
-        // flux interval 기능을 통해 1초마다 다운로드 토큰 큐 조회
-        return Flux.interval(Duration.ofSeconds(1))
-            .mapNotNull {
-                // 다운로드 가능 여부 체크
-                val orderPosition = downloadQueueService.getPosition(requestToken)
-                val downloadingTokens = fileDownloadRequestRepository.getSize()
-                return@mapNotNull 
-                  if (orderPosition!! == 0L && downloadingTokens < 4L) 
-                    orderPosition 
-                  else (orderPosition + downloadingTokens)
-            }
-            .takeUntil { it == 0L }
-            .doOnCancel { downloadQueueService.drop(requestToken) } // 연결 취소시 대기열에서 제거
-            .doOnError { downloadQueueService.drop(requestToken) } // 연결 에러시 대기열에서 제거
-            .doOnComplete { fileDownloadRequestRepository.put(downloadQueueService.dequeue()) }
-    }
+          // flux interval 기능을 통해 1초마다 다운로드 토큰 큐 조회
+          return Flux.interval(Duration.ofSeconds(1))
+              .mapNotNull {
+                  // 다운로드 가능 여부 체크
+                  val orderPosition = downloadQueueService.getPosition(requestToken)
+                  val downloadingTokens = fileDownloadRequestRepository.getSize()
+                  return@mapNotNull 
+                    if (orderPosition!! == 0L && downloadingTokens < 4L) 
+                      orderPosition 
+                    else (orderPosition + downloadingTokens)
+              }
+              .takeUntil { it == 0L }
+              .doOnCancel { downloadQueueService.drop(requestToken) } // 연결 취소시 대기열에서 제거
+              .doOnError { downloadQueueService.drop(requestToken) } // 연결 에러시 대기열에서 제거
+              .doOnComplete { fileDownloadRequestRepository.put(downloadQueueService.dequeue()) }
+      }
     ```
   
 Client 코드
