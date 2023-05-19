@@ -67,68 +67,68 @@ public class MyService {
     @Transactional
     public class MyService {
         
-        @Async
-        public void doSomething(MyEntity entity) {
+          @Async
+          public void doSomething(MyEntity entity) {
             Hibernate.initalize(entity);
             List<Item> items = entity.getOneToManyItems();
             // ...
-        }
+          }
     }
     ```
     하지만 미관상 이쁘지도 않고, 권장되는 방법이 아니기에 Fetch Join혹은 DTO 전달을 권장한다고 한다.
 2. `Fetch Join`
-  * `@Async` 메서드를 호출하기 전 엔티티 객체를 Fetch Join을 통해 연관 엔티티를 전부 로딩하여 넘기는 방식.
+* `@Async` 메서드를 호출하기 전 엔티티 객체를 Fetch Join을 통해 연관 엔티티를 전부 로딩하여 넘기는 방식.
 
-    ```java
-    public interface MyRepository extends JpaRepository<MyEntity, Long> {
+      ```java
+      public interface MyRepository extends JpaRepository<MyEntity, Long> {
 
-      // Fetch join을 통해 items를 전부 load
-      @Query("SELECT DISTINCT m FROM MyEntity m LEFT JOIN FETCH m.items WHERE m.id = :id")
-      Optional<MyEntity> findByIdWithAllItems(@Param("id") Long id);
-    }
-    ```
+        // Fetch join을 통해 items를 전부 load
+        @Query("SELECT DISTINCT m FROM MyEntity m LEFT JOIN FETCH m.items WHERE m.id = :id")
+        Optional<MyEntity> findByIdWithAllItems(@Param("id") Long id);
+      }
+      ```
 
-    ```java
-    @Service
-    @RequireAllArgsConstructor
-    @Transactional
-    public class MyEntityService {
-        
-        private final MyRepository myRepository;
+      ```java
+      @Service
+      @RequireAllArgsConstructor
+      @Transactional
+      public class MyEntityService {
+          
+          private final MyRepository myRepository;
 
-        private final MyService myService;
+          private final MyService myService;
 
-        @Async
-        public void someMethod(Long id) {
+          @Async
+          public void someMethod(Long id) {
 
-          myRepository.findByIdWithAllItems(id)
-            .ifPresent(myService::doSomething)
+            myRepository.findByIdWithAllItems(id)
+              .ifPresent(myService::doSomething)
 
-          // ..
-        }
-    }
-    ```
+            // ..
+          }
+      }
+      ```
 
-    ```java
-    @Service
-    @Transactional
-    public class MyService {
-        
-        @Async
-        public void doSomething(MyEntity entity) {
-          List<Item> items = entity.getItems();
-          // ...
-        }
-    }
-    ```
+      ```java
+      @Service
+      @Transactional
+      public class MyService {
+          
+          @Async
+          public void doSomething(MyEntity entity) {
+            List<Item> items = entity.getItems();
+            // ...
+          }
+      }
+      ```
     위와 같이 모든 item을 Fetch join을 통해 로드 한 후 넘기게 되면, 세션이 닫혀도 문제없이 호출할 수 있다. 
 
-    하지만 다음과 같은 문제점들이 있다.
-    
-    1. item 객체의 `@OneToMany` 연관 객체들을 호출한다면? -> `LazyInitializationException` 발생
-    2. 다른 개발자가 doSomething 메서드를 사용 할 때 LazyLoading 해야 하는 사실을 모른다면? -> 같은 고뇌를 겪게 됨
+      하지만 다음과 같은 문제점들이 있다.
+      
+      1. item 객체의 `@OneToMany` 연관 객체들을 호출한다면? -> `LazyInitializationException` 발생
+      2. 다른 개발자가 doSomething 메서드를 사용 할 때 LazyLoading 해야 하는 사실을 모른다면? -> 같은 고뇌를 겪게 됨
 
-    딱히 그렇게 훌륭한 방식은 아닌것 처럼 보인다.
+      딱히 그렇게 훌륭한 방식은 아닌것 처럼 보인다.
 3. Fetch from Repository 
   * Repository(혹은 조회 서비스) 서비스를 통해 @Async 메서드에서 다시 엔티티를 조회하는 방식
     ```java
@@ -137,99 +137,92 @@ public class MyService {
     @RequireAllArgsConstructor
     public class MyService {
 
-        private final MyRepository myRepository;
-        
-        @Async
-        public void doSomething(Long entityId) {
+          private final MyRepository myRepository;
+          
+          @Async
+          public void doSomething(Long entityId) {
 
-          MyEntity entity = myRepository.findById(entityId).orElseThrow();
+            MyEntity entity = myRepository.findById(entityId).orElseThrow();
 
-          List<Item> items = entity.getItems();
-          // ...
-        }
+            List<Item> items = entity.getItems();
+            // ...
+          }
     }
     ```
     호출하는 Service에서 엔티티 객체를 넘기지 않고, 엔티티를 식별 할 수 있는 정보를 넘겨 서비스에서 엔티티를 조회 한 후 사용하는 방식이다. 하지만 다른 서비스에서 Repository를 의존하고 있으므로 그렇게 좋은 방법으로 보이지는 않는다.
 4. DTO 전달
-  * 사실 서비스에서 엔티티 객체를 넘기고, 해당 엔티티 객체를 받아서 처리하는 방식이 잘못된것으로 사료된다. 
-  
-    각 서비스들은 '정보'를 넘겨야 하지 엔티티 자체를 넘기면 서비스들 사이간의 경계가 무너지기 마련이다. 
-  
-    doSomething이 MyEntity와 그 클래스의 하위 연관 객체의 정보가 필요하다면 다음과 같은 DTO를 통해 정보를 넘기는것이 일반적이다.
+  * 사실 서비스에서 엔티티 객체를 넘기고, 해당 엔티티 객체를 받아서 처리하는 방식이 잘못된것으로 사료된다.  
+  각 서비스들은 '정보'를 넘겨야 하지 엔티티 자체를 넘기면 서비스들 사이간의 경계가 무너지기 마련이다.   
+  doSomething이 MyEntity와 그 클래스의 하위 연관 객체의 정보가 필요하다면 다음과 같은 DTO를 통해 정보를 넘기는것이 일반적이다.
 
-    ```java
-    // record 클래스 타입은 jdk 14부터 지원됨
-    public record MyEntityDTO(
-      Long id,
-      String information,
-      List<ItemDTO> items
-    ) {
+        ```java
+        // record 클래스 타입은 jdk 14부터 지원됨
+        public record MyEntityDTO(
+          Long id,
+          String information,
+          List<ItemDTO> items
+        ) {
 
-      public MyEntityDTO(MyEntity) {
-        this (
-          myEntity.getId(),
-          myEntity.getInformation(),
-          myEntity.getItems().stream()
-            .map(ItemDTO::new)
-          .toList();
-        )
-      }
-    }
-
-    public record ItemDTO(
-      Long id,
-      String name
-    ) {
-
-      public ItemDTO(Item item) {
-        this(
-          item.getId(),
-          item.getName()
-        );
-      }
-    }
-    ```
-
-    ```java
-    @Service
-    public class MyService {
-        
-        @Async
-        public void doSomething(MyEntityDTO entityDTO) {
-          List<ItemDTO> items = entityDTO.items();
-          // ...
+          public MyEntityDTO(MyEntity) {
+            this (
+              myEntity.getId(),
+              myEntity.getInformation(),
+              myEntity.getItems().stream()
+                .map(ItemDTO::new)
+              .toList();
+            )
+          }
         }
-    }
 
+        public record ItemDTO(
+          Long id,
+          String name
+        ) {
 
-    ```
-
-    ```java
-    @Service
-    @RequireAllArgsConstructor
-    @Transactional
-    public class MyEntityService {
-        
-        private final MyRepository myRepository;
-
-        private final MyService myService;
-
-        @Async
-        public void someMethod(Long id) {
-
-          myRepository.findById(id)
-            .map(MyEntityDTO::new)
-            .ifPresent(myService::doSomething)
-
-          // ..
+          public ItemDTO(Item item) {
+            this(
+              item.getId(),
+              item.getName()
+            );
+          }
         }
-    }
-    ```
-    
-    위와 같은 방법으로 이 문제를 해결하게 된다면, MyService은 Transactional을 가질 필요가 없어지고 단순히 그 안의 정보만을 통해 로직을 수행 할 수 있게된다.
+        ```
 
-    모든 개발 방식에 정답은 없지만, 좋은 방법과 나쁜 방법은 존재하듯이, 
-    
-    귀찮더라도 레이어를 지키게 되면 예상치 못한 에러를 방지 할 수 있다 라고 생각한다.
+        ```java
+        @Service
+        public class MyService {
+            
+            @Async
+            public void doSomething(MyEntityDTO entityDTO) {
+              List<ItemDTO> items = entityDTO.items();
+              // ...
+            }
+        }
+        ```
 
-    물론 필자가 시도했던 방법보다 훨씬 좋은 방법이 있겠지만. 당장 짱구를 굴려 나온 방식은 이게 최선이라고 생각한다.
+        ```java
+        @Service
+        @RequireAllArgsConstructor
+        @Transactional
+        public class MyEntityService {
+            
+            private final MyRepository myRepository;
+
+            private final MyService myService;
+
+            @Async
+            public void someMethod(Long id) {
+
+              myRepository.findById(id)
+                .map(MyEntityDTO::new)
+                .ifPresent(myService::doSomething)
+
+              // ..
+            }
+        }
+        ```
+    
+        위와 같은 방법으로 이 문제를 해결하게 된다면, MyService은 Transactional을 가질 필요가 없어지고 단순히 그 안의 정보만을 통해 로직을 수행 할 수 있게된다.  
+        모든 개발 방식에 정답은 없지만, 좋은 방법과 나쁜 방법은 존재하듯이,  
+        귀찮더라도 레이어를 지키게 되면 예상치 못한 에러를 방지 할 수 있다 라고 생각한다.  
+        물론 필자가 시도했던 방법보다 훨씬 좋은 방법이 있겠지만. 당장 짱구를 굴려 나온 방식은 이게 최선이라고 생각한다.
