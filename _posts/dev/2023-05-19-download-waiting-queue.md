@@ -53,7 +53,7 @@ comments: true
       Database -->> Server: 파일 정보 반환
       Server ->> Server: 토큰 생성
       Server ->> Redis: 토큰 저장
-      Server -->> Client: 토큰 반환"
+      Server -->> Client: 토큰 반환
   </div>
 * 파일 다운로드
   <div class="mermaid"> 
