@@ -196,10 +196,7 @@ Server 코드
                   // 다운로드 가능 여부 체크
                   val orderPosition = downloadQueueService.getPosition(requestToken)
                   val downloadingTokens = fileDownloadRequestRepository.getSize()
-                  return@mapNotNull 
-                    if (orderPosition!! == 0L && downloadingTokens < 4L) 
-                      orderPosition 
-                    else (orderPosition + downloadingTokens)
+                  return@mapNotNull (orderPosition + downloadingTokens)
               }
               .takeUntil { it == 0L }
               .doOnCancel { downloadQueueService.drop(requestToken) } // 연결 취소시 대기열에서 제거
