@@ -195,6 +195,7 @@ Server 코드
             downloadQueueService.enqueue(requestToken)
         }
 
+        // flux interval 기능을 통해 1초마다 다운로드 토큰 큐 조회
         return Flux.interval(Duration.ofSeconds(1))
             .mapNotNull {
                 // 다운로드 가능 여부 체크
