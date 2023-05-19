@@ -78,7 +78,7 @@ Bean & Injection
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
      
-         <bean id="testBean" class="com.codewise.component.TestBean">
+         <bean id="testBean" class="com.component.TestBean">
              <property name="name" value="최재호"/>
          </bean>
      </beans>
