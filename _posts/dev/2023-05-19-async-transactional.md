@@ -169,7 +169,7 @@ public class MyService {
               myEntity.getInformation(),
               myEntity.getItems().stream()
                 .map(ItemDTO::new)
-              .toList();
+              .toList()
             )
           }
         }
