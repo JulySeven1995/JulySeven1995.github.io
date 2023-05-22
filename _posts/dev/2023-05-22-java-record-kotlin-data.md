@@ -9,13 +9,13 @@ layout: single
 comments: true
 ---
 
-### Kotlin - Data class
+### __Kotlin - Data class__
 
 코틀린에서는 데이터를 다루기 위한 클래스를 기본적으로 제공한다.  
 바로 `data` 라는 클래스인데, 우리가 Java에서 DTO를 구현하기 위해 필요한 갖가지 기본 함수(toString, getter, equals 등등)들을 제공해준다.  
 백문이 불여일견이듯이, Java의 class로 표현한 DTO와 Kotlin의 Data class로 표현한 DTO의 코드를 살펴보면 다음과 같다.
 
-1. Java
+1. _Java_
     ```java
         public class Person {
 
@@ -59,7 +59,7 @@ comments: true
     물론 `Lombok`을 이용해 보일러플레이트 코드의 양을 비약적으로 줄일 수 있긴 하지만,  
     Lombok도 결국에는 보일러플레이트 코드를 어노테이션으로 구현해주는것이고,  
     Lombok의 어노테이션 자체가 보일러플레이트 코드가 되어버린다.
-2. Kotlin
+2. _Kotlin_
     ```kotlin
         data class Person(
             val id: Long,
@@ -96,7 +96,7 @@ comments: true
         person2 hashCode: -1411844362 
     ```
 
-### Java - Record class
+### __Java - Record class__
 
 `Java`에서도 손가락만 물고 있을 수는 없었는지, Kotlin의 Data 클래스와 대응되는 Record 클래스를 지원하기 시작했다.  
 Java 14 부터 지원되었으며, 공식적으로는 Java 16 부터 지원되었다.
