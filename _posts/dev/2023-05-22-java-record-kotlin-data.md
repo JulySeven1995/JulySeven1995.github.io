@@ -9,7 +9,7 @@ layout: single
 comments: true
 ---
 
-### 1.Kotlin - Data class
+### Kotlin - Data class
 
 코틀린에서는 데이터를 다루기 위한 클래스를 기본적으로 제공한다.  
 바로 `data` 라는 클래스인데, 우리가 Java에서 DTO를 구현하기 위해 필요한 갖가지 기본 함수(toString, getter, equals 등등)들을 제공해준다.  
