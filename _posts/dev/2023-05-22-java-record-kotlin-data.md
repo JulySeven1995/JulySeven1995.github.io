@@ -66,9 +66,7 @@ comments: true
             val firstName: String,
             val lastName: String,
             val dateOfBirth: LocalDateTime,
-        ) {
-
-        }
+        )
     ```
     너무나도 간단하게 DTO 클래스가 완성되었다. `val`은 `final`을 뜻하는 변수로 이해하면 된다(가변형은 `var`)  
     kotlin의 data class는 getter, toString, equals, hashCode등의 함수들을 기본적으로 구현해준다.
