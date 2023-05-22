@@ -99,7 +99,7 @@ public class MyService {
           @Async
           public void someMethod(Long id) {
 
-            myRepository.findByIdWithAllItems(id)
+            myRepository.findByIdWithAllItems(id
               .ifPresent(myService::doSomething)
 
             // ..
@@ -183,11 +183,11 @@ public class MyService {
           List<ItemDTO> items
         ) {
 
-          public MyEntityDTO(MyEntity) {
+          public MyEntityDTO(MyEntity entity) {
             this (
-              myEntity.getId(),
-              myEntity.getInformation(),
-              myEntity.getItems().stream()
+              entity.getId(),
+              entity.getInformation(),
+              entity.getItems().stream()
                 .map(ItemDTO::new)
               .toList()
             );
