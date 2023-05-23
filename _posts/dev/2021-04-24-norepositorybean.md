@@ -3,7 +3,6 @@ title: "@NoRepositoryBean"
 categories:
   - Dev
 tags:
-  - Spring
   - Spring Boot
   - JPA
 layout: single

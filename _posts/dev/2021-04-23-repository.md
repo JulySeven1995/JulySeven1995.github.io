@@ -3,8 +3,8 @@ title: "@Repository? @Service?"
 categories:
   - Dev
 tags:
-  - Spring
   - Spring Boot
+  - JPA
 layout: single
 comments: true
 ---

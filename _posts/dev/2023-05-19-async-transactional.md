@@ -3,7 +3,7 @@ title: "Lazy Loading의 비동기 작업에 대하여"
 categories:
   - Dev
 tags:
-  - Spring
+  - Spring Boot
   - Transactional
   - JPA
 layout: single

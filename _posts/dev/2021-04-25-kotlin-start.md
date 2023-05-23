@@ -3,7 +3,6 @@ title: "Kotlin + Spring Boot 연습 프로젝트"
 categories:
   - Dev
 tags:
-  - Spring
   - Spring Boot
   - Kotlin
 layout: single

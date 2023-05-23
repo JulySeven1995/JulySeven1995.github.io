@@ -3,7 +3,6 @@ title: "Spring Bean & 주입(Injection)"
 categories:
   - Dev
 tags:
-  - Spring
   - Spring Boot
 layout: single
 comments: true

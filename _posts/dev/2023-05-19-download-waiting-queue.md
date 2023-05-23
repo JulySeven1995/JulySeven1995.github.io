@@ -3,7 +3,7 @@ title: "다운로드 대기열 기능 적용기"
 categories:
   - Dev
 tags:
-  - WebFlux
+  - Spring WebFlux
   - Kotlin
   - SSE
 layout: single
