@@ -27,7 +27,7 @@ Keycloak의 중요 기능들은 다음과 같다.
   -> 우리 회사에서 적용하려고 했던 궁극적인 이유
 2. _사용자 인증 및 관리_  
   사용자 계정 생성, 비밀번호 재설정, 이메일 확인 등의 기능을 포함하여 사용자 관리 기능 지원
-3. _클라이언트 애플리케이션 지원_  
+3. _클라이언트 애플리케이션 지원_ 
   웹 애플리케이션, 모바일 앱, 백엔드 어플리케이션 등 다양한 플랫폼에서 Keycloak을 통해 인증 및 권한 부여를 처리 가능
 4. _다양한 인증 방식_  
   사용자 아이디/비밀번호 인증, 소셜 미디어 계정을 통한 인증(Google, Facebook 등), SAML, LDAP, OpenID Connect 등의 인증 프로토콜을 지원
@@ -117,7 +117,7 @@ Keycloak의 중요 기능들은 다음과 같다.
 
 ### Step 3. 로그인 테스트  
   지금까지 설정한 클라이언트 정보, 유저 정보를 통해 Access Token을 발급하는 테스트를 진행해보자.
-  ```sh
+  ```shell
   curl --location 'http://localhost:9000/auth/realms/master/protocol/openid-connect/token' \
   --header 'Content-Type: application/x-www-form-urlencoded' \
   --data-urlencode 'client_id=jaeho-client' \
@@ -283,13 +283,13 @@ JWT 토큰을 발급받을 수 있는것을 확인 할 수 있다.
       ```
   5. __테스트__  
     모든 세팅이 끝났으니 프로젝트를 실행시키고, 토큰 없이 hello api를 호출해보자.
-      ```sh
+      ```shell
       curl -L -k -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/api/hello
       ```
       권한이 없어 401이 응답값으로 나타나는것을 알 수 있다.
       그렇다면 Access token을 발급받아서 호출하면 잘 될까
 
-      ```sh
+      ```shell
       curl --location 'http://localhost:8080/api/hello' \
       --header 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ4UDFyUERZQUgtaHJOVmVVd2NjSDBGN3RlTmdaNGhCWFRLem9vcE42MVVvIn0.eyJleHAiOjE2ODQ4OTUxODcsImlhdCI6MTY4NDg5MzM4NywianRpIjoiYWNmYjU0ODAtYjczMS00YmFkLTkzYTEtZGY0MTYxMGQyNzVjIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo5MDAwL2F1dGgvcmVhbG1zL21hc3RlciIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJlNjg0MzU5Ni04NzNkLTQyMGEtYjc1My04MGVhMjgzOTlmMTgiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJqYWVoby1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNTA3ZTE3YWMtYmM5Mi00M2Q5LTgxNjUtZGVkZjE4MGJkNmZhIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtbWFzdGVyIiwib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJzaWQiOiI1MDdlMTdhYy1iYzkyLTQzZDktODE2NS1kZWRmMTgwYmQ2ZmEiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJKYWVobyBDaG9pIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiamFlaG8uY2hvaSIsImdpdmVuX25hbWUiOiJKYWVobyIsImZhbWlseV9uYW1lIjoiQ2hvaSIsImVtYWlsIjoianVseXNldmVuMTk5NUBnbWFpbC5jb20ifQ.PjEHSyGLt95aJhOJM35eJ06vNNngjXe-urdn9c7lYwEhd4882E8zKCwBQe4Cl8xDwnkV04Xlv2NW2uA9uNOQI-HQLusKzqRtfpndc5JefPqh60gL5g1Qvgh3mhWHo2wz2y3r6YPQaJvlP2bADj-zzN7VU8vUARlVgfm4JvLpO27O_UzuF72NMt98ICT6XbHGdQqbCBunwwXwa0X-NQNBZTOxvh4mVXwAcmVJ0aTrT-v5XnCNZcc_JYKyVYLYiQfEkyVgStdpetCGyDMkO03I_yPETEs7-9bQJ3AJEQgWqiUVmtVE6EWIMWNlxm_EBhSryS12Bjq9v4znHYg2gkrqZg'
       ```
