@@ -224,46 +224,50 @@ JWT 토큰을 발급받을 수 있는것을 확인 할 수 있다.
   http 접근 제어를 위한 Security Configuration을 설정해준다.
 
     ```java
-    private final ClientRegistration clientRegistration;
+    @EnableWebSecurity
+    public class SecurityConfiguration {
 
-    public SecurityConfiguration(ClientRegistrationRepository clientRegistrationRepository) {
+        private final ClientRegistration clientRegistration;
+        public SecurityConfiguration(ClientRegistrationRepository clientRegistrationRepository) {
 
-        this.clientRegistration = clientRegistrationRepository.findByRegistrationId("oidc");
-    }
+            this.clientRegistration = clientRegistrationRepository.findByRegistrationId("oidc");
+        }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        // /api/** url 대한 모든 요청은 인가되어야만 한다.
-        http.authorizeHttpRequests()
-            .mvcMatchers("/api/**").authenticated()
-        .and()
-            .oauth2ResourceServer()
-            .jwt()
-            .jwtAuthenticationConverter(this.jwtAuthenticationConverter());
+            http.csrf()
+                .disable()
+                .authorizeHttpRequests()
+                .mvcMatchers("/api/**").authenticated()
+            .and()
+                .oauth2ResourceServer()
+                .jwt()
+                .jwtAuthenticationConverter(this.jwtAuthenticationConverter());
 
-        return http.build();
-    }
+            return http.build();
+        }
 
 
-    // jwt decoder 설정
-    @Bean
-    public JwtDecoder jwtDecoder() {
+        @Bean
+        public JwtDecoder jwtDecoder() {
 
-        NimbusJwtDecoder jwtDecoder = JwtDecoders.fromIssuerLocation(clientRegistration.getProviderDetails().getIssuerUri());
+            NimbusJwtDecoder jwtDecoder = JwtDecoders.fromIssuerLocation(clientRegistration.getProviderDetails().getIssuerUri());
 
-        jwtDecoder.setJwtValidator(new JwtTokenValidator(clientRegistration.getProviderDetails().getUserInfoEndpoint().getUri()));
+            jwtDecoder.setJwtValidator(new JwtTokenValidator(clientRegistration.getProviderDetails().getUserInfoEndpoint().getUri()));
 
-        return jwtDecoder;
-    }
+            return jwtDecoder;
+        }
 
-    private Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
+        private Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
 
-        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+            JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
 
-        converter.setJwtGrantedAuthoritiesConverter(new JwtGrantedAuthoritiesConverter());
+            converter.setJwtGrantedAuthoritiesConverter(new JwtGrantedAuthoritiesConverter());
 
-        return converter;
+            return converter;
+        }
+
     }
     ```
 
