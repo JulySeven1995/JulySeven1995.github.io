@@ -3,6 +3,7 @@ title: "Spring Boot + Keycloak 적용기"
 categories:
   - Dev
 tags:
+  - OIDC
   - Keycloak
   - Java
   - Spring Boot
@@ -152,7 +153,7 @@ JWT 토큰을 발급받을 수 있는것을 확인 할 수 있다.
   *추가 하고 싶은 의존성이 있다면 추가해도 무방하다.*  
 
     프로젝트를 열었다면, application.yml을 다음과 같이 세팅해준다.
-    ```yml
+    ```yaml
     spring:
       application:
         name: jaeho-project
