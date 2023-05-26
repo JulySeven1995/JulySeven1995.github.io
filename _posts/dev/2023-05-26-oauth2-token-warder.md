@@ -311,9 +311,6 @@ public class RedisTokenWarder extends TokenWarder {
       ```shell
       2023-05-26 16:42:43.412 DEBUG 41739 --- [   scheduling-1] c.j.j.token.scheduler.RedisTokenWarder   : 토큰이 삭제 됐어요!
       ```
-스케줄러가 썩 좋은 로직을 갖고 있는 형태는 아니다. 모든 Token을 Fetching해 와서 for문을 돌리고있으니  
-어플리케이션에 큰 부담이 가는 형태이니, 추후에 더 개선된 어플리케이션으로 개선해 보도록 하겠다.
-
 시나리오는 다음과 같다.
 <div class="mermaid">
 sequenceDiagram
@@ -328,3 +325,5 @@ sequenceDiagram
     end
   end
 </div>
+스케줄러가 썩 좋은 로직을 갖고 있는 형태는 아니다. 모든 Token을 Fetching해 와서 for문을 돌리고있으니  
+어플리케이션에 큰 부담이 가는 형태이니, 추후에 더 개선된 어플리케이션으로 개선해 보도록 하겠다.
