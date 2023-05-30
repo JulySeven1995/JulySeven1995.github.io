@@ -5,7 +5,6 @@ categories:
 tags:
   - Keycloak
   - OIDC
-  - Kotlin
   - Spring Boot
 layout: single
 comments: true
