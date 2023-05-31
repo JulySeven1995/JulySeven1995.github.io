@@ -155,12 +155,13 @@ sequenceDiagram
 
         JwtAuthenticationToken jwtAuthenticationToken = new JwtAuthenticationToken(token);
 
-        if (this.tokenRepository.get(token.getTokenValue()).isPresent()) {
-            
-            log.debug("토큰 발견!");
-            SecurityContextHolder.getContext()
-              .setAuthentication(jwtAuthenticationToken);
+        String sid = String.valueOf(token.getClaims().get("sid"));
 
+        Optional<String> existsToken = this.tokenRepository.get(sid);
+        if (existsToken.isPresent() && existsToken.get().equals(token.getTokenValue())) {
+
+            log.debug("토큰 발견!");
+            SecurityContextHolder.getContext().setAuthentication(jwtAuthenticationToken);
             return OAuth2TokenValidatorResult.success();
         }
 
@@ -190,7 +191,7 @@ sequenceDiagram
 
       Long duration = (expiresAt - Instant.now().toEpochMilli()) / 1000;
 
-      this.tokenRepository.set(token.getTokenValue(), expiresAt.toString(), duration);
+      this.tokenRepository.set(sid, token.getTokenValue(), duration);
 
       log.debug("토큰이 없어서 저장!");
 
