@@ -155,6 +155,7 @@ sequenceDiagram
 
         JwtAuthenticationToken jwtAuthenticationToken = new JwtAuthenticationToken(token);
 
+        // 발급된 토큰은 sid(sessionId)를 유지한다.
         String sid = String.valueOf(token.getClaims().get("sid"));
 
         Optional<String> existsToken = this.tokenRepository.get(sid);
